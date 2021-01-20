@@ -9,9 +9,6 @@ import (
 	"strings"
 )
 
-// TODO
-
-
 var differenceBetweenIndex []int
 var convertStringSliceToInt []int
 var convertIntSliceToString []string
