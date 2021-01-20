@@ -14,6 +14,7 @@ var convertStringSliceToInt []int
 var convertIntSliceToString []string
 var finishStringWriteToFile string
 var parseIPLinesFile []string
+var count int = 0
 
 func main() {
 
@@ -122,6 +123,10 @@ func main() {
 
 				file.WriteString(finishStringWriteToFile + "\n")
 
+				count = count + 1
+
+				fmt.Printf("lines in file : %d \n", count)
+
 				if j == differenceBetweenIndex[1] {
 					convertStringSliceToInt[3] = 0
 
@@ -129,7 +134,7 @@ func main() {
 				}
 
 			}
-
+			file.Close()
 		}
 
 	}
