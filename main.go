@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+// TODO
+// panic: runtime error: index out of range [2] with length 2
+// 36 lines
+
 var differenceBetweenIndex []int
 var convertStringSliceToInt []int
 var convertIntSliceToString []string
@@ -19,6 +23,26 @@ var count int = 0
 func main() {
 
 	cliArgs := os.Args[:]
+
+	fmt.Println(cliArgs)
+
+	if len(os.Args[:]) < 2 {
+
+		cliArgs = append(cliArgs, "")
+	}
+
+	fmt.Println(cliArgs)
+
+	if strings.Contains(cliArgs[2], "") {
+		path, err := os.Getwd()
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		os.Args[2] = path
+
+	}
 
 	//  open file
 	file, err := os.Open(cliArgs[1])
