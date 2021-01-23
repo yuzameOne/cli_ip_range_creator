@@ -10,8 +10,6 @@ import (
 )
 
 // TODO
-// panic: runtime error: index out of range [2] with length 2
-// 36 lines
 
 var differenceBetweenIndex []int
 var convertStringSliceToInt []int
@@ -22,30 +20,31 @@ var count int = 0
 
 func main() {
 
-	cliArgs := os.Args[:]
+	cliArgs := os.Args[1:]
 
-	fmt.Println(cliArgs)
+	// checking for arguments
 
-	if len(os.Args[:]) < 2 {
+	if len(cliArgs) == 1 {
 
-		cliArgs = append(cliArgs, "")
-	}
+		if len(cliArgs) < 2 {
 
-	fmt.Println(cliArgs)
-
-	if strings.Contains(cliArgs[2], "") {
-		path, err := os.Getwd()
-
-		if err != nil {
-			log.Println(err)
+			cliArgs = append(cliArgs, "nil")
 		}
 
-		os.Args[2] = path
+		if strings.Contains(cliArgs[1], "nil") {
+			path, err := os.Getwd()
 
+			if err != nil {
+				log.Println(err)
+			}
+
+			cliArgs[1] = path + "/new_ip_" + cliArgs[0]
+
+		}
 	}
 
 	//  open file
-	file, err := os.Open(cliArgs[1])
+	file, err := os.Open(cliArgs[0])
 
 	// check error
 	if err != nil {
@@ -114,7 +113,7 @@ func main() {
 
 		}
 
-		file, err := os.OpenFile(cliArgs[2], os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+		file, err := os.OpenFile(cliArgs[1], os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
 		if err != nil {
 			log.Fatalf("file not create : %s", err)
 		}
