@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,7 @@ import (
 )
 
 // TODO
+// Wtite Readme.md
 
 var differenceBetweenIndex []int
 var convertStringSliceToInt []int
@@ -20,31 +22,31 @@ var count int = 0
 
 func main() {
 
-	cliArgs := os.Args[1:]
+	path, err := os.Getwd()
 
-	// checking for arguments
+	if err != nil {
+		log.Println(err)
+	}
 
-	if len(cliArgs) == 1 {
+	var argOne string
+	flag.StringVar(&argOne, "pathtofile", "", "path to file ")
 
-		if len(cliArgs) < 2 {
+	if argOne != "" {
+		fmt.Println("the first argument is missing")
+		os.Exit(3)
+	}
 
-			cliArgs = append(cliArgs, "nil")
-		}
+	var argTwo string
+	flag.StringVar(&argTwo, "pathtosavefile", "", "path to file ")
 
-		if strings.Contains(cliArgs[1], "nil") {
-			path, err := os.Getwd()
+	flag.Parse()
 
-			if err != nil {
-				log.Println(err)
-			}
-
-			cliArgs[1] = path + "/new_ip_" + cliArgs[0]
-
-		}
+	if argTwo == "" {
+		argTwo = path + "/new_ip_" + argOne
 	}
 
 	//  open file
-	file, err := os.Open(cliArgs[0])
+	file, err := os.Open(argOne)
 
 	// check error
 	if err != nil {
@@ -113,7 +115,7 @@ func main() {
 
 		}
 
-		file, err := os.OpenFile(cliArgs[1], os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+		file, err := os.OpenFile(argTwo, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
 		if err != nil {
 			log.Fatalf("file not create : %s", err)
 		}
