@@ -5,12 +5,12 @@
 - takes a range of IP addresses like this..... 94.28.104.0-94.28.111.255
 - take the number 104 compare with the number 111, 0 and 255 compare and rotate in a loop
 - and we get a file like this :
- 5.100.67.0   
-5.100.67.255
-5.100.70.0
-5.100.70.255
-5.100.73.0
-5.100.73.255
+- 5.100.67.0   
+- 5.100.67.255
+- 5.100.70.0
+- 5.100.70.255
+- 5.100.73.0
+- 5.100.73.255
 
 ### how to use it ?
 
