@@ -10,9 +10,6 @@ import (
 	"strings"
 )
 
-// TODO
-// Wtite Readme.md
-
 var differenceBetweenIndex []int
 var convertStringSliceToInt []int
 var convertIntSliceToString []string
