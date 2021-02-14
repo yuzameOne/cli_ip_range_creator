@@ -19,12 +19,14 @@ var count int = 0
 
 func main() {
 
+	// get root path main file
 	path, err := os.Getwd()
 
 	if err != nil {
 		log.Println(err)
 	}
 
+	// get and check first argument in cli
 	var argOne string
 	flag.StringVar(&argOne, "pathtofile", "", "path to file ")
 
@@ -33,6 +35,7 @@ func main() {
 		os.Exit(3)
 	}
 
+	// get and check second argument in cli
 	var argTwo string
 	flag.StringVar(&argTwo, "pathtosavefile", "", "path to file ")
 
@@ -97,6 +100,7 @@ func main() {
 
 		}
 
+		//  delete all elements slice convertStringSliceToInt
 		if len(convertStringSliceToInt) != 0 {
 			for i := 0; i < 4; i++ {
 
@@ -104,6 +108,7 @@ func main() {
 			}
 		}
 
+		//  convert all string elements to int type , and append  to slice convertStringSliceToInt
 		for _, val := range subStringLeft {
 
 			value, _ := strconv.Atoi(val)
@@ -112,11 +117,12 @@ func main() {
 
 		}
 
+		// open/create file where write finaly range ip
 		file, err := os.OpenFile(argTwo, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
 		if err != nil {
 			log.Fatalf("file not create : %s", err)
 		}
-
+		// get three index to int slice  and increment him
 		for i := convertStringSliceToInt[2]; i <= (convertStringSliceToInt[2] + differenceBetweenIndex[0]); i++ {
 
 			if i == (twoIndexStaticNumber+differenceBetweenIndex[0])+1 {
@@ -124,31 +130,37 @@ func main() {
 			}
 			convertStringSliceToInt[2] = i
 
+			// get get index to int slice  and increment him
 			for j := convertStringSliceToInt[3]; j <= (convertStringSliceToInt[3] + differenceBetweenIndex[1]); j++ {
 
 				convertStringSliceToInt[3] = j
 
+				//  convert all int elements to string type , and append  to slice convertStringSliceToInt
 				for _, val := range convertStringSliceToInt {
 
 					value := strconv.Itoa(val)
 
 					convertIntSliceToString = append(convertIntSliceToString, value)
 				}
-
+				// convert string slice to string
 				finishStringWriteToFile = strings.Join(convertIntSliceToString, ".")
 
+				// delete all element slice sitring convertIntSliceToString
 				for i := 0; i < len(convertIntSliceToString); {
 
 					convertIntSliceToString[len(convertIntSliceToString)-1] = " "
 					convertIntSliceToString = convertIntSliceToString[:len(convertIntSliceToString)-1]
 				}
-
+				// write finish string to file
 				file.WriteString(finishStringWriteToFile + "\n")
 
+				// counter string
 				count = count + 1
 
+				// console output number string line in the file
 				fmt.Printf("lines in file : %d \n", count)
 
+				//  if j == 255
 				if j == differenceBetweenIndex[1] {
 					convertStringSliceToInt[3] = 0
 
