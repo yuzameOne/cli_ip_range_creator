@@ -23,4 +23,4 @@
 
 - clone github  repository https://github.com/yuzameOne/cli_ip_range_creator.git
 - compile the file :  go build main.go
-- run the program : ./main example.txt 
+- run the program : ./main -pathtofile=example.txt ,  optional flag : -pathtosavefile=
