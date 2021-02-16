@@ -10,6 +10,11 @@ import (
 	"strings"
 )
 
+// TODO
+// НЕ ЗНАЮ КАК НАПИСАТЬ ТЕСТ ДЛЯ ПИНАРНИКА,СЕЙЧАС НАХОЖУСЬ В МОРЕ ОКОЛО САХАЛИНА ((((
+
+// решение: создать ветку (git) где программа не компилируеться, а запускаеться как скрип
+
 var differenceBetweenIndex []int
 var convertStringSliceToInt []int
 var convertIntSliceToString []string
