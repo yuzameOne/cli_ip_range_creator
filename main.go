@@ -10,10 +10,6 @@ import (
 	"strings"
 )
 
-// TODO
-
-// написать тест для бинарника  
-
 var differenceBetweenIndex []int
 var convertStringSliceToInt []int
 var convertIntSliceToString []string
@@ -33,7 +29,6 @@ func main() {
 	// get and check first argument in cli
 	var argOne string
 	flag.StringVar(&argOne, "pathtofile", "", "path to file ")
-
 	if argOne != "" {
 		fmt.Println("the first argument is missing")
 		os.Exit(3)
