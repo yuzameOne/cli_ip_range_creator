@@ -9,11 +9,13 @@ import (
 )
 
 var newCustomString strings.Builder
-var subSlice []string
+var subSliceStringBuilder []string
+var sliceOfSlice [][]string
 var stringRange []string
 
-func main() {
-	f, err := os.Open("example.txt")
+func readIpRangeFile(pathToFle string) []string {
+
+	f, err := os.Open(pathToFle)
 
 	if err != nil {
 		fmt.Println(err)
@@ -29,40 +31,48 @@ func main() {
 		if err == io.EOF {
 			break
 		}
+
 		stringRange = append(stringRange, line)
-
 	}
+	return stringRange
+}
 
-	fmt.Println(stringRange)
+//TODO:
+// не поимаю как ложить  слайс в  многомерный слайс
+// index 2,3 and 6,7
 
-	// str := "5.100.67.0-5.100.67.255"
+func clearExtraChar(x func(string) []string) {
 
-	// for index, value := range str {
+	for i := 0; i < len(stringRange); i++ {
 
-	// 	if value == 46 || value == 45 {
+		str := stringRange[i]
 
-	// 		subSlice = append(subSlice, newCustomString.String())
-	// 		newCustomString.Reset()
-	// 	}
+		for index, value := range str {
 
-	// 	if value != 46 && value != 45 {
+			if value == 46 || value == 45 {
 
-	// 		newCustomString.WriteByte(str[index])
+				subSliceStringBuilder = append(subSliceStringBuilder, newCustomString.String())
+				newCustomString.Reset()
+			}
+			if value != 46 && value != 45 {
 
-	// 		if len(str)-1 == index {
-	// 			subSlice = append(subSlice, newCustomString.String())
-	// 		}
+				newCustomString.WriteByte(str[index])
 
-	// 	}
+				if len(str)-1 == index {
+					subSliceStringBuilder = append(subSliceStringBuilder, newCustomString.String())
+					newCustomString.Reset()
+				}
 
-	// }
-	// fmt.Println(subSlice)
+			}
+		}
+		sliceOfSlice = append(sliceOfSlice, subSliceStringBuilder)
+	}
+	fmt.Println(sliceOfSlice)
+}
 
-	//TODO:
+func main() {
 
-	// index 2,3 and 6,7
-	// нужно в for сравнивать СТРОКИ index 2,3 and 6,7 если меньше  конвертировать в int, инкрементить
-	// и тут же конверитить в стороку и собирать это в нову строку StringBulder
+	readIpRangeFile("example.txt")
 
-	//  СУКА 2 фукции 3 канала))))) и горутины)))
+	clearExtraChar(readIpRangeFile)
 }
