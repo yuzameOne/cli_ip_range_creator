@@ -42,7 +42,11 @@ func readIpRangeFile(pathToFle string) []string {
 // идея с могомерным массивом не удалась (((((
 // переписать название  фукции  clearExtraChar
 
-// что думаю : разбить строку Split вернет []string, strconv сравивать конвертить  и тут же откручивать
+// что думаю :
+
+//  в фукции ниже изменить название на splitRange и писать это все в map[[]string][]string и в следущей функции уже.
+
+//  разбить строку Split вернет []string, strconv сравивать конвертить  и тут же откручивать
 
 func clearExtraChar(x func(string) []string) {
 
