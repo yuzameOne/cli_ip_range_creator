@@ -32,8 +32,11 @@ func readIpRangeFile(pathToFle string) []string {
 			break
 		}
 
+		line = strings.TrimRight(line, "\n")
+
 		stringRange = append(stringRange, line)
 	}
+
 	return stringRange
 }
 
@@ -43,11 +46,7 @@ func splitRange(arrRange []string) map[string]string {
 
 		str := arrRange[i]
 
-		strings.Trim(str, "\n")
-
 		subSlice := strings.Split(str, "-")
-
-		subSlice[1] = strings.TrimRight(subSlice[1], "\n")
 
 		rangeMap[subSlice[0]] = subSlice[1]
 
@@ -63,7 +62,10 @@ func splitRange(arrRange []string) map[string]string {
 //  разбить строку Split вернет []string, strconv сравивать конвертить  и тут же откручивать
 // 	возможно копировать по индексу (copy) концы строки
 
-// Влоить один if в  другой  if
+// Строка содержит массив байтов, который, будучи созданным, является неизменяе­мым.
+// Элементы байтового среза, напротив, можно свободно модифицировать
+
+// пакет bytes ,  []byte(string) bytes.Buffer
 
 func switchRange(rangeMap map[string]string) {
 
@@ -121,10 +123,6 @@ func switchRange(rangeMap map[string]string) {
 			}
 
 		}
-
-		// fmt.Printf(" key : %s, value : %s  \n", index, value)
-
-		// fmt.Print(value[1])
 	}
 
 }
