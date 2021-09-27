@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 )
 
 var stringRange []string
 var rangeMap = make(map[string]string, len(stringRange))
+var finalIprange []string
 
 func readIpRangeFile(pathToFle string) []string {
 
@@ -61,13 +63,68 @@ func splitRange(arrRange []string) map[string]string {
 //  разбить строку Split вернет []string, strconv сравивать конвертить  и тут же откручивать
 // 	возможно копировать по индексу (copy) концы строки
 
+// Влоить один if в  другой  if
+
 func switchRange(rangeMap map[string]string) {
 
 	for index, value := range rangeMap {
 
-		fmt.Printf(" key : %s, value : %s  \n", index, value)
+		compareStrings := strings.Compare(index, value)
 
-		fmt.Print(value[1])
+		if compareStrings == -1 || compareStrings > 1 {
+
+			leftSlice := strings.Split(index, ".")
+			rightSlice := strings.Split(value, ".")
+
+			if leftSlice[3] != rightSlice[3] {
+
+				leftIndex, _ := strconv.Atoi(leftSlice[3])
+				rightIndex, _ := strconv.Atoi(rightSlice[3])
+
+				number := rightIndex - leftIndex
+
+				for i := 0; i < number; i++ {
+
+					leftIndex++
+
+					s := strconv.Itoa(leftIndex)
+
+					leftSlice[3] = s
+
+					addArray := strings.Join(leftSlice, ".")
+
+					finalIprange = append(finalIprange, addArray)
+				}
+
+			}
+
+			if leftSlice[2] != rightSlice[2] {
+
+				leftIndex, _ := strconv.Atoi(leftSlice[2])
+				rightIndex, _ := strconv.Atoi(rightSlice[2])
+
+				number := rightIndex - leftIndex
+
+				for i := 0; i < number; i++ {
+
+					leftIndex++
+
+					s := strconv.Itoa(leftIndex)
+
+					leftSlice[2] = s
+
+					addArray := strings.Join(leftSlice, ".")
+
+					finalIprange = append(finalIprange, addArray)
+				}
+
+			}
+
+		}
+
+		// fmt.Printf(" key : %s, value : %s  \n", index, value)
+
+		// fmt.Print(value[1])
 	}
 
 }
