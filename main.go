@@ -8,9 +8,6 @@ import (
 	"strings"
 )
 
-var newCustomString strings.Builder
-var subSliceStringBuilder []string
-var sliceOfSlice [][]string
 var stringRange []string
 var rangeMap = make(map[string]string, len(stringRange))
 
@@ -38,25 +35,19 @@ func readIpRangeFile(pathToFle string) []string {
 	return stringRange
 }
 
-//TODO:
+func splitRange(arrRange []string) map[string]string {
 
-//  все это в switchRange
-//  разбить строку Split вернет []string, strconv сравивать конвертить  и тут же откручивать
-// 	возможно копировать по индексу (copy) концы строки
+	for i := 0; i < len(arrRange); i++ {
 
-func splitRange(x func(string) []string) map[string]string {
+		str := arrRange[i]
 
-	for i := 0; i < len(stringRange); i++ {
-
-		str := stringRange[i]
+		strings.Trim(str, "\n")
 
 		subSlice := strings.Split(str, "-")
 
-		for i := 0; i < len(stringRange); i++ {
+		subSlice[1] = strings.TrimRight(subSlice[1], "\n")
 
-			rangeMap[subSlice[0]] = subSlice[1]
-			break
-		}
+		rangeMap[subSlice[0]] = subSlice[1]
 
 	}
 
@@ -64,7 +55,20 @@ func splitRange(x func(string) []string) map[string]string {
 
 }
 
-func switchRange(x func(map[string]string)) {
+//TODO:
+
+//  все это в switchRange
+//  разбить строку Split вернет []string, strconv сравивать конвертить  и тут же откручивать
+// 	возможно копировать по индексу (copy) концы строки
+
+func switchRange(rangeMap map[string]string) {
+
+	for index, value := range rangeMap {
+
+		fmt.Printf(" key : %s, value : %s  \n", index, value)
+
+		fmt.Print(value[1])
+	}
 
 }
 
@@ -72,5 +76,7 @@ func main() {
 
 	readIpRangeFile("example.txt")
 
-	splitRange(readIpRangeFile)
+	splitRange(stringRange)
+
+	switchRange(rangeMap)
 }
