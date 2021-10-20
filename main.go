@@ -40,52 +40,55 @@ func readIpRangeFile(pathToFle string) []string {
 	return stringRange
 }
 
-func removesPointAndDash(arrayRange []string) {
+//  TODO
+//  писат subSlice в  [][]string
 
-	for i := 0; i < len(arrayRange); i++ {
+// func removesPointAndDash(arrayRange []string) {
 
-		str := arrayRange[i]
+// 	for i := 0; i < len(arrayRange); i++ {
 
-		newCustomString.Reset()
+// 		str := arrayRange[i]
 
-		for index, value := range str {
+// 		newCustomString.Reset()
 
-			if value == 46 || value == 45 {
+// 		for index, value := range str {
 
-				subSlice = append(subSlice, newCustomString.String())
-				newCustomString.Reset()
-			}
+// 			if value == 46 || value == 45 {
 
-			if value != 46 && value != 45 {
+// 				subSlice = append(subSlice, newCustomString.String())
+// 				newCustomString.Reset()
+// 			}
 
-				newCustomString.WriteByte(str[index])
+// 			if value != 46 && value != 45 {
 
-				if len(str)-1 == index {
-					subSlice = append(subSlice, newCustomString.String())
-				}
+// 				newCustomString.WriteByte(str[index])
 
-			}
+// 				if len(str)-1 == index {
+// 					subSlice = append(subSlice, newCustomString.String())
+// 				}
 
-			 fmt.Println(subSlice)
+// 			}
 
-		}
+// 			fmt.Println(subSlice)
 
-		for i := 0; i < len(subSlice); {
+// 		}
 
-			fmt.Println(subSlice)
-			subSlice[len(subSlice)-1] = " "
-			fmt.Println(subSlice)
-			subSlice = subSlice[:len(subSlice)-1]
-		}
+// 		for i := 0; i < len(subSlice); {
 
-		fmt.Println(subSlice)
-	}
+// 			fmt.Println(subSlice)
+// 			subSlice[len(subSlice)-1] = " "
+// 			fmt.Println(subSlice)
+// 			subSlice = subSlice[:len(subSlice)-1]
+// 		}
 
-}
+// 		fmt.Println(subSlice)
+// 	}
+
+// }
 
 func main() {
 
 	readIpRangeFile("example.txt")
-	removesPointAndDash(stringRange)
+	// removesPointAndDash(stringRange)
 
 }
