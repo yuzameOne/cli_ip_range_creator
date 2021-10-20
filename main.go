@@ -9,8 +9,9 @@ import (
 )
 
 var stringRange []string
-var rangeMap = make(map[string]string, len(stringRange))
-var finalIprange []string
+var newCustomString strings.Builder
+var subSlice []string
+var pureSlice []string
 
 func readIpRangeFile(pathToFle string) []string {
 
@@ -39,44 +40,52 @@ func readIpRangeFile(pathToFle string) []string {
 	return stringRange
 }
 
-func splitRange(arrRange []string) map[string]string {
+func removesPointAndDash(arrayRange []string) {
 
-	for i := 0; i < len(arrRange); i++ {
+	for i := 0; i < len(arrayRange); i++ {
 
-		str := arrRange[i]
+		str := arrayRange[i]
 
-		subSlice := strings.Split(str, "-")
+		newCustomString.Reset()
 
-		rangeMap[subSlice[0]] = subSlice[1]
+		for index, value := range str {
 
+			if value == 46 || value == 45 {
+
+				subSlice = append(subSlice, newCustomString.String())
+				newCustomString.Reset()
+			}
+
+			if value != 46 && value != 45 {
+
+				newCustomString.WriteByte(str[index])
+
+				if len(str)-1 == index {
+					subSlice = append(subSlice, newCustomString.String())
+				}
+
+			}
+
+			 fmt.Println(subSlice)
+
+		}
+
+		for i := 0; i < len(subSlice); {
+
+			fmt.Println(subSlice)
+			subSlice[len(subSlice)-1] = " "
+			fmt.Println(subSlice)
+			subSlice = subSlice[:len(subSlice)-1]
+		}
+
+		fmt.Println(subSlice)
 	}
-
-	return rangeMap
-
-}
-
-//TODO:
-
-// Строка содержит массив байтов, который, будучи созданным, является неизменяе­мым.
-// Элементы байтового среза, напротив, можно свободно модифицировать
-
-// у слайсов leftSlice и  rightSlice  конверитировть 2  и 3 элементы
-
-// пакет bytes ,  []byte(string) bytes.Buffer
-
-
-// 29.09.21   взаять string bulder  откручивать for + concatinate []  index of slice
-
-
-func switchRange(rangeMap map[string]string) {
 
 }
 
 func main() {
 
 	readIpRangeFile("example.txt")
+	removesPointAndDash(stringRange)
 
-	splitRange(stringRange)
-
-	switchRange(rangeMap)
 }
