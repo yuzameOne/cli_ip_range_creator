@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -10,8 +11,9 @@ import (
 
 var stringRange []string
 var newCustomString strings.Builder
-var subSlice []string
-var pureSlice []string
+
+// var subSlice []string
+// var pureSlice []string
 
 func readIpRangeFile(pathToFle string) []string {
 
@@ -40,8 +42,24 @@ func readIpRangeFile(pathToFle string) []string {
 	return stringRange
 }
 
+func removesPointAndDash(arrayRange []string) {
+
+	str := "5.100.67.0-5.100.67.255"
+
+	point := bytes.Index([]byte(str), []byte("-"))
+
+	leftString := str[:point]
+	rightString := str[point+1:]
+
+	fmt.Println(leftString)
+	fmt.Println(rightString)
+
+	// TODO
+	//  что надо  67.0 и  67.255 из стиринги в  инты сравить и обратно в строку  bytes.Buffer
+}
+
 //  TODO
-//  писат subSlice в  [][]string
+//  писать subSlice в  [][]string
 
 // func removesPointAndDash(arrayRange []string) {
 
@@ -89,6 +107,6 @@ func readIpRangeFile(pathToFle string) []string {
 func main() {
 
 	readIpRangeFile("example.txt")
-	// removesPointAndDash(stringRange)
+	removesPointAndDash(stringRange)
 
 }
