@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -14,6 +13,8 @@ var newCustomString strings.Builder
 
 // var subSlice []string
 // var pureSlice []string
+
+var zero, one, two, three, four, five, six int
 
 // "static" byte array
 var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57}
@@ -33,16 +34,21 @@ var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57}
 	57		9
 */
 
-func pointIndexes(str string) {
+func pointIndexes(str string) []*int {
 
 	str := "5.100.67.0-5.100.67.255"
 
+	idxSymbols := []*int{*zero, *one, *two, *three, *four, *five, *six}
+
 	for idx, vle := range str {
 
-		if vle == 46 || vle == 45{
+		if vle == 46 || vle == 45 {
 
+			idxSymbols = append(idxSymbols[idx], idx)
 		}
 	}
+
+	return &idxSymbols
 
 }
 
@@ -75,15 +81,7 @@ func readIpRangeFile(pathToFle string) []string {
 
 func removesPointAndDash(arrayRange []string) {
 
-	str := "5.100.67.0-5.100.67.255"
-
-	point := bytes.Index([]byte(str), []byte("-"))
-
-	leftString := str[:point]
-	rightString := str[point+1:]
-
-	fmt.Println(leftString)
-	fmt.Println(rightString)
+	idx := pointIndexes(arrayRange[i])
 
 	// TODO
 	//  что надо  67.0 и  67.255 из стиринги в  инты сравить и обратно в строку  bytes.Buffer
@@ -104,6 +102,9 @@ func removesPointAndDash(arrayRange []string) {
 	// 23.10 13:54 буду пихать в кортеж, потому-что  не происходит выделение памяти при переопределении
 	// функция pointIndexes хостануть локальный "статический" массив и положить туда сслыки на переменные  вот так
 	//  [&one,&two,&three .... &ten]  и count откручивать индекс и return кортеж
+
+	// 24.10 1:33 pointIndexes возвращает локальный массив с индексами всех точек в строке и в removesPointAndDash
+	// собираю строку в bytes.Buffer
 
 	/*
 
