@@ -33,6 +33,19 @@ var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57}
 	57		9
 */
 
+func pointIndexes(str string) {
+
+	str := "5.100.67.0-5.100.67.255"
+
+	for idx, vle := range str {
+
+		if vle == 46 || vle == 45{
+
+		}
+	}
+
+}
+
 func readIpRangeFile(pathToFle string) []string {
 
 	f, err := os.Open(pathToFle)
@@ -87,6 +100,35 @@ func removesPointAndDash(arrayRange []string) {
 	// точки и тире. в итоге будет 7 индексов, 3-тий индекс будет тире
 	//  не понимаю как вернуть зачение!!!!!! писать в массив, а потом на каждой итерации удалять все элементы(дорого) или
 	// пихать в переменую (кортежи) результать фукнкции (7 идексов)
+
+	// 23.10 13:54 буду пихать в кортеж, потому-что  не происходит выделение памяти при переопределении
+	// функция pointIndexes хостануть локальный "статический" массив и положить туда сслыки на переменные  вот так
+	//  [&one,&two,&three .... &ten]  и count откручивать индекс и return кортеж
+
+	/*
+
+
+		one, two := "0", "1"
+
+		fmt.Printf("one : %s, two : %s  \n", one, two)
+
+		fmt.Println(&one, &two)
+
+		one, two = "2", "3"
+
+		fmt.Printf("one : %s, two : %s  \n", one, two)
+
+		fmt.Println(&one, &two)
+
+
+			вывод в консоли.
+			one : 0, two : 1
+			0xc00010a040 0xc00010a050
+			one : 2, two : 3
+			0xc00010a040 0xc00010a050
+
+
+	*/
 }
 
 //  TODO
