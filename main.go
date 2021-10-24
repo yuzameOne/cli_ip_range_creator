@@ -14,12 +14,14 @@ var newCustomString strings.Builder
 // var subSlice []string
 // var pureSlice []string
 
-var zero, one, two, three, four, five, six int
+var zero, one, two, three, four, five, six *int
 
 // "static" byte array
 var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57}
 
 /*
+	ascii table
+
 	Dec   Char
 	----------
 	48		0
@@ -34,22 +36,24 @@ var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57}
 	57		9
 */
 
-func pointIndexes(str string) []*int {
+func pointIndexes(array []string) *[]int {
 
-	str := "5.100.67.0-5.100.67.255"
+	idxSymbols := []int{*zero, *one, *two, *three, *four, *five, *six}
 
-	idxSymbols := []*int{*zero, *one, *two, *three, *four, *five, *six}
+	for i := 0; i < len(array); i++ {
 
-	for idx, vle := range str {
+		str := array[i]
 
-		if vle == 46 || vle == 45 {
+		for idx, vle := range str {
 
-			idxSymbols = append(idxSymbols[idx], idx)
+			if vle == 46 || vle == 45 {
+
+				idxSymbols = append(idxSymbols, idx)
+			}
 		}
+
 	}
-
 	return &idxSymbols
-
 }
 
 func readIpRangeFile(pathToFle string) []string {
@@ -81,7 +85,7 @@ func readIpRangeFile(pathToFle string) []string {
 
 func removesPointAndDash(arrayRange []string) {
 
-	idx := pointIndexes(arrayRange[i])
+	// idx := pointIndexes(arrayRange[i])
 
 	// TODO
 	//  что надо  67.0 и  67.255 из стиринги в  инты сравить и обратно в строку  bytes.Buffer
