@@ -11,9 +11,6 @@ import (
 var stringRange []string
 var newCustomString strings.Builder
 
-// var subSlice []string
-// var pureSlice []string
-
 var zero, one, two, three, four, five, six *int
 
 // "static" byte array
@@ -30,7 +27,6 @@ var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57}
 	51		3
 	52		4
 	53		5
-	54		6
 	55		7
 	56		8
 	57		9
@@ -43,16 +39,19 @@ func pointIndexes(array []string) *[]int {
 	for i := 0; i < len(array); i++ {
 
 		str := array[i]
+		count := 0
 
 		for idx, vle := range str {
 
 			if vle == 46 || vle == 45 {
 
-				idxSymbols = append(idxSymbols, idx)
+				idxSymbols[count] = idx
+
+				count++
 			}
 		}
-
 	}
+
 	return &idxSymbols
 }
 
@@ -85,7 +84,7 @@ func readIpRangeFile(pathToFle string) []string {
 
 func removesPointAndDash(arrayRange []string) {
 
-	// idx := pointIndexes(arrayRange[i])
+	_ = pointIndexes(arrayRange)
 
 	// TODO
 	//  что надо  67.0 и  67.255 из стиринги в  инты сравить и обратно в строку  bytes.Buffer
