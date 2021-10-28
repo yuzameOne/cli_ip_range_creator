@@ -25,33 +25,34 @@ import (
 */
 
 // "static" byte array
-var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57}
-var arrayNumberCount int
+var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57} //!????
+var finalIpRange = make([]string, 1)
+var arrayIndexCount int
 var idxSymbols = make([]int, 7)
 var stringRange []string
 
+func сustomStringBuilder() {
+
+	stringPointIndexes(stringRange)
+
+}
 
 func stringPointIndexes(array []string) {
 
-	for i := arrayNumberCount; i < len(array); i++ {
+	str := array[arrayIndexCount]
+	count := 0
 
-		str := array[i]
-		count := 0
+	for idx, vle := range str {
 
-		for idx, vle := range str {
+		if vle == 46 || vle == 45 {
 
-			if vle == 46 || vle == 45 {
-
-				p := &idxSymbols[count]
-				*p = idx
-				count++
-			}
-
+			p := &idxSymbols[count]
+			*p = idx
+			count++
 		}
-		arrayNumberCount++
 
-		break
 	}
+	arrayIndexCount++
 }
 
 func readIpRangeFile(pathToFle string) []string {
@@ -84,6 +85,6 @@ func readIpRangeFile(pathToFle string) []string {
 func main() {
 
 	readIpRangeFile("example.txt")
-	stringPointIndexes(stringRange)
+	сustomStringBuilder()
 
 }
