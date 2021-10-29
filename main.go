@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -35,17 +34,17 @@ var stringRange []string
 // first string(stringRange) in idxSymbols  [1 5 8 10 12 16 19] 5.100.67.0-5.100.67.255
 
 func сustomStringBuilder() {
-	var buf bytes.Buffer
+	// var buf bytes.Buffer
 
-	for i := 0; i < len(stringRange); i++ {
+	// for i := 0; i < len(stringRange); i++ {
 
-		stringPointIndexes(stringRange)
+	stringPointIndexes(stringRange)
 
-		str := stringRange[i]
-
-	}
+	// str := stringRange[i]
 
 }
+
+// }
 
 func stringPointIndexes(array []string) {
 
@@ -63,6 +62,8 @@ func stringPointIndexes(array []string) {
 
 	}
 	arrayIndexCount++
+
+	fmt.Println(idxSymbols)
 }
 
 func readIpRangeFile(pathToFle string) []string {
