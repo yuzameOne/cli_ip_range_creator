@@ -9,12 +9,24 @@ import (
 	"strings"
 )
 
-var finalIpRange = make([]string, 1)
+var finalIpRange = make([]string, 0)
 var arrayIndexCount int
 var idxSymbols = make([]int, 7)
 var stringRange []string
 
-// first string(stringRange) in idxSymbols  [1 5 8 10 12 16 19] 5.100.67.0-5.100.67.255
+func createFinalFile() {
+
+	file, err := os.OpenFile("finalRange.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+
+	if err != nil {
+		fmt.Printf("file not create : %s", err)
+	}
+
+	for _, vle := range finalIpRange {
+
+		file.WriteString(vle + "\n")
+	}
+}
 
 func сustomStringBuilder() {
 
@@ -46,10 +58,9 @@ func сustomStringBuilder() {
 
 				cstr.Reset()
 			}
+		}
 
-		} else if d != 0 {
-
-			cstr.Reset()
+		if d != 0 {
 
 			for i := 0; i < d; i++ {
 
@@ -57,7 +68,20 @@ func сustomStringBuilder() {
 				n := strconv.Itoa(s)
 				cstr.WriteString(str[:6] + n + "." + str[9:10])
 
-				fmt.Println(cstr.String())
+				finalIpRange = append(finalIpRange, cstr.String())
+
+				cstr.Reset()
+
+				for i := 1; i < 256; i++ {
+
+					s := strconv.Itoa(i)
+					cstr.WriteString(str[:9] + s)
+
+					finalIpRange = append(finalIpRange, cstr.String())
+
+					cstr.Reset()
+
+				}
 
 			}
 		}
@@ -112,7 +136,6 @@ func main() {
 
 	readIpRangeFile("example.txt")
 	сustomStringBuilder()
-
-	fmt.Println(finalIpRange)
+	createFinalFile()
 
 }
