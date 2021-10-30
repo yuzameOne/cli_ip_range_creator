@@ -9,24 +9,6 @@ import (
 	"strings"
 )
 
-/*
-	ascii table
-
-	Dec   Char
-	----------
-	48		0
-	49		1
-	50		2
-	51		3
-	52		4
-	53		5
-	55		7
-	56		8
-	57		9
-*/
-
-// "static" byte array
-var asciiArray = [10]byte{48, 49, 50, 51, 52, 53, 54, 55, 56, 57} //!????
 var finalIpRange = make([]string, 1)
 var arrayIndexCount int
 var idxSymbols = make([]int, 7)
@@ -35,48 +17,52 @@ var stringRange []string
 // first string(stringRange) in idxSymbols  [1 5 8 10 12 16 19] 5.100.67.0-5.100.67.255
 
 func сustomStringBuilder() {
-	// var buf bytes.Buffer
-
-	// for i := 0; i < len(stringRange); i++ {
-
-	stringPointIndexes(stringRange)
-
-	// str := stringRange[i]
 
 	var cstr strings.Builder
 
-	str := "5.100.75.0-5.100.76.255"
+	for i := 0; i < len(stringRange); i++ {
 
-	third := str[idx[1]+1 : idx[2]]
+		stringPointIndexes(stringRange)
 
-	seventh := str[idx[5]+1 : idx[6]]
+		str := stringRange[i]
 
-	t, _ := strconv.Atoi(third)
-	s, _ := strconv.Atoi(seventh)
+		third := str[idxSymbols[1]+1 : idxSymbols[2]]
 
-	d := -(t - s)
+		seventh := str[idxSymbols[5]+1 : idxSymbols[6]]
 
-	if str[idx[1]+1:idx[2]] != str[idx[5]+1:idx[6]] {
+		t, _ := strconv.Atoi(third)
+		s, _ := strconv.Atoi(seventh)
 
-		for i := 0; i < 256; i++ {
+		d := s - t
+
+		if d == 0 {
+
+			for i := 0; i < 256; i++ {
+
+				s := strconv.Itoa(i)
+				cstr.WriteString(str[:9] + s)
+
+				finalIpRange = append(finalIpRange, cstr.String())
+
+				cstr.Reset()
+			}
+
+		} else if d != 0 {
 
 			cstr.Reset()
-			s := strconv.Itoa(i)
-			cstr.WriteString(str[:9] + s)
 
-			fmt.Println(cstr.String())
+			for i := 0; i < d; i++ {
+
+				s := t + i
+				n := strconv.Itoa(s)
+				cstr.WriteString(str[:6] + n + "." + str[9:10])
+
+				fmt.Println(cstr.String())
+
+			}
 		}
-
 	}
-
-	fmt.Printf("%v  \n", cstr)
-
-	fmt.Printf("%v \n", d)
-	// fmt.Println(cstr.String())
-
 }
-
-// }
 
 func stringPointIndexes(array []string) {
 
@@ -94,8 +80,6 @@ func stringPointIndexes(array []string) {
 
 	}
 	arrayIndexCount++
-
-	fmt.Println(idxSymbols)
 }
 
 func readIpRangeFile(pathToFle string) []string {
@@ -128,5 +112,7 @@ func main() {
 
 	readIpRangeFile("example.txt")
 	сustomStringBuilder()
+
+	fmt.Println(finalIpRange)
 
 }
