@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -41,6 +42,37 @@ func сustomStringBuilder() {
 	stringPointIndexes(stringRange)
 
 	// str := stringRange[i]
+
+	var cstr strings.Builder
+
+	str := "5.100.75.0-5.100.76.255"
+
+	third := str[idx[1]+1 : idx[2]]
+
+	seventh := str[idx[5]+1 : idx[6]]
+
+	t, _ := strconv.Atoi(third)
+	s, _ := strconv.Atoi(seventh)
+
+	d := -(t - s)
+
+	if str[idx[1]+1:idx[2]] != str[idx[5]+1:idx[6]] {
+
+		for i := 0; i < 256; i++ {
+
+			cstr.Reset()
+			s := strconv.Itoa(i)
+			cstr.WriteString(str[:9] + s)
+
+			fmt.Println(cstr.String())
+		}
+
+	}
+
+	fmt.Printf("%v  \n", cstr)
+
+	fmt.Printf("%v \n", d)
+	// fmt.Println(cstr.String())
 
 }
 
