@@ -40,68 +40,30 @@ func сustomStringBuilder() {
 
 		third := str[idxSymbols[1]+1 : idxSymbols[2]]
 
-		seventh := str[idxSymbols[5]+1 : idxSymbols[6]]
-
 		t, _ := strconv.Atoi(third)
-		s, _ := strconv.Atoi(seventh)
 
-		d := s - t
-
-		/*
-		 TODO
-
-		  и так значит стоял на смене и пришла мысль переписать  строки   с 57  по 95
-
-		  на бесконечный  for  c  break и goto
-
-		  3 if , t++, n - переменая которая будет типа string , производная от n = t++ и конвертим в стрингу
-
-		  1 if  делает всю работу сюда будет стоять  label для goto  !!!!!  НЕ делаем cstr.Reset()
-
-		  2 if  проверяет что лежит в var cstr strings.Builder если там строка !=  правой половине исходной строки
-		   делаем cstr.Reset() , увеличиваем  n на единицу
-
-
-		   хочу спать плохо думаю  ((((((((
-		*/
-
-		if d == 0 {
+		for {
 
 			for i := 0; i < 256; i++ {
 
+				cstr.Reset()
+
 				s := strconv.Itoa(i)
-				cstr.WriteString(str[:9] + s)
+				nstr := strconv.Itoa(t)
+
+				cstr.WriteString(str[:idxSymbols[1]] + "." + nstr + "." + s)
 
 				finalIpRange = append(finalIpRange, cstr.String())
 
-				cstr.Reset()
 			}
-		}
 
-		if d != 0 {
+			t++
 
-			for i := 0; i < d; i++ {
+			if strings.Compare(cstr.String(), str[11:]) == 0 {
 
-				s := t + i
-				n := strconv.Itoa(s)
-				cstr.WriteString(str[:6] + n + "." + str[9:10])
-
-				finalIpRange = append(finalIpRange, cstr.String())
-
-				cstr.Reset()
-
-				for i := 1; i < 256; i++ {
-
-					s := strconv.Itoa(i)
-					cstr.WriteString(str[:9] + s)
-
-					finalIpRange = append(finalIpRange, cstr.String())
-
-					cstr.Reset()
-
-				}
-
+				break
 			}
+
 		}
 	}
 }
