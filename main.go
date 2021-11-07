@@ -7,7 +7,9 @@ import (
 	"runtime"
 )
 
-var THREADS int = runtime.GOMAXPROCS(0)
+var threads int = runtime.GOMAXPROCS(0)
+
+var queue = make(chan string, threads)
 
 /*
 	TODO
@@ -18,7 +20,9 @@ var THREADS int = runtime.GOMAXPROCS(0)
 
 	в моем случае это 4 потока(ноут), дома настольный ПК  16 потоков.
 
-	
+	 дальше  будет канал который будет в роли очереди (queue FIFO) , размером в количество потоков  (т.е 4)
+
+	 канал будет принимать строку из файла и отдавать горутинам для работы
 
 
 */
@@ -36,7 +40,7 @@ func readFile(fname string) {
 
 	for rf.Scan() {
 
-		fmt.Println(rf.Text())
+		queue <- rf.Text()
 	}
 }
 
