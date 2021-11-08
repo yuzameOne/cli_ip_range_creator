@@ -13,30 +13,24 @@ var threads int = runtime.GOMAXPROCS(0)
 var queue = make(chan string, threads)
 var stringOutGorotine = make(chan string, threads)
 
-/*
-	TODO
-
-	так  будет fanOut -> fanIn
-
-	для чего нужна  переменая gomaxprocs ???? для того чтобы задейвствовать все потоки которые есть у планировщика на проце автоматически
-
-	в моем случае это 4 потока(ноут), дома настольный ПК  16 потоков.
-
-	 дальше  будет канал который будет в роли очереди (queue FIFO) , размером в количество потоков  (т.е 4)
-
-	 канал будет принимать строку из файла и отдавать горутинам для работы
-
-
-*/
 func createFinalFile() {
 
 	f, err := os.OpenFile("finalRange.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+
+	defer f.Close()
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	f.WriteString(<- stringOutGorotine + "\n")
+	for {
+		s, ok := <-stringOutGorotine
+		f.WriteString(s + "\n")
+		if !ok {
+			break
+		}
+	}
+
 }
 
 func customStringBuilder(stringOutChan string) {
@@ -100,16 +94,16 @@ func readFile(fname string) {
 	for rf.Scan() {
 
 		queue <- rf.Text()
+
+		s := <-queue
+
+		go customStringBuilder(s)
 	}
+	close(queue)
 }
 
 func main() {
 
 	readFile("example.txt")
-
-	for s := range queue {
-
-		go customStringBuilder(s)
-	}
-
+	createFinalFile()
 }
