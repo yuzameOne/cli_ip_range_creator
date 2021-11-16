@@ -37,7 +37,8 @@ func customStringBuilder(stringOutChan string) {
 
 	var cstr strings.Builder
 	var idxSymbols = make([]int, 7)
-	var count int
+	var count int 
+	
 
 	for idx, vle := range stringOutChan {
 
