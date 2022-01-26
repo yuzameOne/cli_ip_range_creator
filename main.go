@@ -16,7 +16,7 @@ import (
 var threads int = runtime.NumCPU()
 var queue = make(chan string, threads)
 var stringOutGorotine = make(chan string, threads)
-var count uint64
+var timerInt uint64
 
 var wg sync.WaitGroup
 
@@ -33,8 +33,8 @@ func createFinalFile(fname string) {
 	for {
 		s, ok := <-stringOutGorotine
 		f.WriteString(s + "\n")
-		count++
-		fmt.Printf("lines written to file : %d \n", count)
+		timerInt++
+		fmt.Printf("lines written to file : %v \n", timerInt)
 		if !ok {
 			break
 		}
@@ -76,6 +76,9 @@ func customStringBuilder(stringOutChan string) {
 
 			stringOutGorotine <- cstr.String()
 		}
+
+		fmt.Println(cstr.String())
+		fmt.Println(stringOutChan[11:])
 
 		t++
 
@@ -158,10 +161,12 @@ func main() {
 
 	wg.Wait()
 
-	close(stringOutGorotine)
-
 	duration := time.Since(start)
 
-	fmt.Printf("Time to work : %v , rows added in filnalFile : %d , file name : new_%s  \n", duration, count, argOne)
+	time.Sleep(duration)
+
+	// close(stringOutGorotine)
+
+	fmt.Printf("Time to work : %v , rows added in filnalFile : %v , file name : new_%s  \n", duration, timerInt, argOne)
 
 }
