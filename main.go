@@ -10,11 +10,13 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var threads int = runtime.NumCPU()
 var queue = make(chan string, threads)
 var stringOutGorotine = make(chan string, threads)
+var count uint64
 
 var wg sync.WaitGroup
 
@@ -31,6 +33,8 @@ func createFinalFile(fname string) {
 	for {
 		s, ok := <-stringOutGorotine
 		f.WriteString(s + "\n")
+		count++
+		fmt.Printf("lines written to file : %d \n", count)
 		if !ok {
 			break
 		}
@@ -108,6 +112,8 @@ func readFile(fname string) {
 
 func main() {
 
+	start := time.Now()
+
 	path, err := os.Getwd()
 
 	if err != nil {
@@ -124,11 +130,14 @@ func main() {
 
 	var argTwo string
 	flag.StringVar(&argTwo, "ptsf", "", "path to  save file ")
+
 	flag.Parse()
 
 	if argTwo == "" {
-		argTwo = path + "/new_ip_" + argOne
+		argTwo = path + "/new_" + argOne
 	}
+
+	fmt.Println("Start work")
 
 	go readFile(argOne)
 
@@ -146,8 +155,13 @@ func main() {
 		go customStringBuilder(s)
 
 	}
+
 	wg.Wait()
 
 	close(stringOutGorotine)
+
+	duration := time.Since(start)
+
+	fmt.Printf("Time to work : %v , rows added in filnalFile : %d , file name : new_%s  \n", duration, count, argOne)
 
 }
