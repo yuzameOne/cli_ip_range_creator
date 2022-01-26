@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 	"strconv"
@@ -16,9 +18,9 @@ var stringOutGorotine = make(chan string, threads)
 
 var wg sync.WaitGroup
 
-func createFinalFile() {
+func createFinalFile(fname string) {
 
-	f, err := os.OpenFile("finalRange.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+	f, err := os.OpenFile(fname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
 
 	defer f.Close()
 
@@ -106,9 +108,31 @@ func readFile(fname string) {
 
 func main() {
 
-	go readFile("example.txt")
+	path, err := os.Getwd()
 
-	go createFinalFile()
+	if err != nil {
+		log.Println(err)
+	}
+
+	var argOne string
+	flag.StringVar(&argOne, "ptf", "", "path to file ")
+
+	if argOne != "" {
+		fmt.Println("the first argument is missing : path to file ")
+		os.Exit(3)
+	}
+
+	var argTwo string
+	flag.StringVar(&argTwo, "ptsf", "", "path to  save file ")
+	flag.Parse()
+
+	if argTwo == "" {
+		argTwo = path + "/new_ip_" + argOne
+	}
+
+	go readFile(argOne)
+
+	go createFinalFile(argTwo)
 
 	for {
 
