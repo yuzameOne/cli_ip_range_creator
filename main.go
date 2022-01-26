@@ -7,11 +7,14 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 )
 
-var threads int = runtime.GOMAXPROCS(0)
+var threads int = runtime.NumCPU()
 var queue = make(chan string, threads)
 var stringOutGorotine = make(chan string, threads)
+
+var wg sync.WaitGroup
 
 func createFinalFile() {
 
@@ -37,8 +40,7 @@ func customStringBuilder(stringOutChan string) {
 
 	var cstr strings.Builder
 	var idxSymbols = make([]int, 7)
-	var count int 
-	
+	var count int
 
 	for idx, vle := range stringOutChan {
 
@@ -77,6 +79,7 @@ func customStringBuilder(stringOutChan string) {
 		}
 
 	}
+	wg.Done()
 }
 
 func readFile(fname string) {
@@ -96,15 +99,31 @@ func readFile(fname string) {
 
 		queue <- rf.Text()
 
-		s := <-queue
-
-		go customStringBuilder(s)
 	}
+
 	close(queue)
 }
 
 func main() {
 
-	readFile("example.txt")
-	createFinalFile()
+	go readFile("example.txt")
+
+	go createFinalFile()
+
+	for {
+
+		s, ok := <-queue
+
+		if !ok {
+			break
+		}
+
+		wg.Add(1)
+		go customStringBuilder(s)
+
+	}
+	wg.Wait()
+
+	close(stringOutGorotine)
+
 }
