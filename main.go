@@ -17,8 +17,6 @@ var threads int = runtime.NumCPU()
 var queue = make(chan string, threads)
 var stringOutGorotine = make(chan string, threads)
 
-var timerInt uint64
-
 var wg sync.WaitGroup
 
 func createFinalFile(fname string) {
@@ -34,8 +32,6 @@ func createFinalFile(fname string) {
 	for {
 		s, ok := <-stringOutGorotine
 		f.WriteString(s + "\n")
-		// timerInt++
-		// fmt.Printf("lines written to file : %v \n", timerInt)
 		if !ok {
 			break
 		}
@@ -64,21 +60,10 @@ func customStringBuilder(stringOutChan string) {
 
 	t, _ := strconv.Atoi(third)
 
-	// fmt.Println("rows equal")
-	if strings.Compare(stringOutChan[:idxSymbols[3]], stringOutChan[idxSymbols[3]+1:]) == 0 {
-
+	if stringOutChan[:idxSymbols[3]] == stringOutChan[idxSymbols[3]+1:] || stringOutChan[idxSymbols[1]+1:idxSymbols[2]] > stringOutChan[idxSymbols[5]+1:idxSymbols[6]] {
 		wg.Done()
 
 		return
-	}
-
-	// left row is larger
-	if stringOutChan[idxSymbols[1]+1:idxSymbols[2]] > stringOutChan[idxSymbols[5]+1:idxSymbols[6]] {
-
-		wg.Done()
-
-		return
-
 	}
 
 	for {
