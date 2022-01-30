@@ -2,78 +2,50 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
-	"io"
+	"log"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
-var finalIpRange = make([]string, 0)
-var arrayIndexCount int
-var idxSymbols = make([]int, 7)
-var stringRange []string
+var threads int = runtime.NumCPU()
+var queue = make(chan string, threads)
+var stringOutGorotine = make(chan string, threads)
 
-func createFinalFile() {
+var wg sync.WaitGroup
 
-	file, err := os.OpenFile("finalRange.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+func createFinalFile(fname string) {
+
+	f, err := os.OpenFile(fname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+
+	defer f.Close()
 
 	if err != nil {
-		fmt.Printf("file not create : %s", err)
+		fmt.Println(err)
 	}
 
-	for _, vle := range finalIpRange {
-
-		file.WriteString(vle + "\n")
-	}
-}
-
-func сustomStringBuilder() {
-
-	var cstr strings.Builder
-
-	for i := 0; i < len(stringRange); i++ {
-
-		stringPointIndexes(stringRange)
-
-		str := stringRange[i]
-
-		third := str[idxSymbols[1]+1 : idxSymbols[2]]
-
-		t, _ := strconv.Atoi(third)
-
-		for {
-
-			for i := 0; i < 256; i++ {
-
-				cstr.Reset()
-
-				s := strconv.Itoa(i)
-				nstr := strconv.Itoa(t)
-
-				cstr.WriteString(str[:idxSymbols[1]] + "." + nstr + "." + s)
-
-				finalIpRange = append(finalIpRange, cstr.String())
-
-			}
-
-			t++
-
-			if strings.Compare(cstr.String(), str[11:]) == 0 {
-
-				break
-			}
-
+	for {
+		s, ok := <-stringOutGorotine
+		f.WriteString(s + "\n")
+		if !ok {
+			break
 		}
 	}
+
 }
 
-func stringPointIndexes(array []string) {
+func customStringBuilder(stringOutChan string) {
 
-	str := array[arrayIndexCount]
-	count := 0
+	var cstr strings.Builder
+	var idxSymbols = make([]int, 7)
+	var count int
 
-	for idx, vle := range str {
+	for idx, vle := range stringOutChan {
 
 		if vle == 46 || vle == 45 {
 
@@ -83,39 +55,118 @@ func stringPointIndexes(array []string) {
 		}
 
 	}
-	arrayIndexCount++
-}
 
-func readIpRangeFile(pathToFle string) []string {
+	third := stringOutChan[idxSymbols[1]+1 : idxSymbols[2]]
 
-	f, err := os.Open(pathToFle)
+	t, _ := strconv.Atoi(third)
 
-	if err != nil {
-		fmt.Println(err)
+	if stringOutChan[:idxSymbols[3]] == stringOutChan[idxSymbols[3]+1:] || stringOutChan[idxSymbols[1]+1:idxSymbols[2]] > stringOutChan[idxSymbols[5]+1:idxSymbols[6]] {
+		wg.Done()
+
+		return
 	}
 
-	defer f.Close()
-
-	r := bufio.NewReader(f)
-
 	for {
-		line, err := r.ReadString('\n')
 
-		if err == io.EOF {
+		for i := 0; i < 256; i++ {
+
+			cstr.Reset()
+
+			s := strconv.Itoa(i)
+			nstr := strconv.Itoa(t)
+
+			cstr.WriteString(stringOutChan[:idxSymbols[1]] + "." + nstr + "." + s)
+
+			stringOutGorotine <- cstr.String()
+		}
+
+		t++
+
+		if strings.Compare(cstr.String(), stringOutChan[idxSymbols[3]+1:idxSymbols[6]]+".255") == 0 {
+
 			break
 		}
 
-		line = strings.TrimRight(line, "\n")
-
-		stringRange = append(stringRange, line)
 	}
-	return stringRange
+	wg.Done()
+}
+
+func readFile(fname string) {
+
+	f, err := os.Open(fname)
+
+	defer f.Close()
+
+	if err != nil {
+
+		fmt.Println(err)
+	}
+
+	rf := bufio.NewScanner(f)
+
+	for rf.Scan() {
+
+		queue <- strings.TrimRight(rf.Text(), "\n")
+
+	}
+
+	close(queue)
 }
 
 func main() {
 
-	readIpRangeFile("example.txt")
-	сustomStringBuilder()
-	createFinalFile()
+	start := time.Now()
+
+	path, err := os.Getwd()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	var argOne string
+	flag.StringVar(&argOne, "ptf", "", "path to file ")
+
+	if argOne != "" {
+		fmt.Println("the first argument is missing : path to file ")
+		os.Exit(3)
+	}
+
+	var argTwo string
+	flag.StringVar(&argTwo, "ptsf", "", "path to  save file ")
+
+	flag.Parse()
+
+	if argTwo == "" {
+		argTwo = path + "/new_" + argOne
+	}
+
+	fmt.Println("Start work")
+
+	go readFile(argOne)
+
+	go createFinalFile(argTwo)
+
+	for {
+
+		s, ok := <-queue
+
+		if !ok {
+			break
+		}
+
+		wg.Add(1)
+		go customStringBuilder(s)
+
+	}
+
+	wg.Wait()
+
+	duration := time.Since(start)
+
+	time.Sleep(duration)
+
+	close(stringOutGorotine)
+
+	fmt.Printf("Time to work : %v , file name : new_%s  \n", duration, argOne)
 
 }
