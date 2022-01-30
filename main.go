@@ -16,6 +16,7 @@ import (
 var threads int = runtime.NumCPU()
 var queue = make(chan string, threads)
 var stringOutGorotine = make(chan string, threads)
+
 var timerInt uint64
 
 var wg sync.WaitGroup
@@ -33,8 +34,8 @@ func createFinalFile(fname string) {
 	for {
 		s, ok := <-stringOutGorotine
 		f.WriteString(s + "\n")
-		timerInt++
-		fmt.Printf("lines written to file : %v \n", timerInt)
+		// timerInt++
+		// fmt.Printf("lines written to file : %v \n", timerInt)
 		if !ok {
 			break
 		}
@@ -63,6 +64,23 @@ func customStringBuilder(stringOutChan string) {
 
 	t, _ := strconv.Atoi(third)
 
+	// fmt.Println("rows equal")
+	if strings.Compare(stringOutChan[:idxSymbols[3]], stringOutChan[idxSymbols[3]+1:]) == 0 {
+
+		wg.Done()
+
+		return
+	}
+
+	// left row is larger
+	if stringOutChan[idxSymbols[1]+1:idxSymbols[2]] > stringOutChan[idxSymbols[5]+1:idxSymbols[6]] {
+
+		wg.Done()
+
+		return
+
+	}
+
 	for {
 
 		for i := 0; i < 256; i++ {
@@ -77,12 +95,9 @@ func customStringBuilder(stringOutChan string) {
 			stringOutGorotine <- cstr.String()
 		}
 
-		fmt.Println(cstr.String())
-		fmt.Println(stringOutChan[11:])
-
 		t++
 
-		if strings.Compare(cstr.String(), stringOutChan[11:]) == 0 {
+		if strings.Compare(cstr.String(), stringOutChan[idxSymbols[3]+1:idxSymbols[6]]+".255") == 0 {
 
 			break
 		}
@@ -106,7 +121,7 @@ func readFile(fname string) {
 
 	for rf.Scan() {
 
-		queue <- rf.Text()
+		queue <- strings.TrimRight(rf.Text(), "\n")
 
 	}
 
@@ -165,8 +180,8 @@ func main() {
 
 	time.Sleep(duration)
 
-	// close(stringOutGorotine)
+	close(stringOutGorotine)
 
-	fmt.Printf("Time to work : %v , rows added in filnalFile : %v , file name : new_%s  \n", duration, timerInt, argOne)
+	fmt.Printf("Time to work : %v , file name : new_%s  \n", duration, argOne)
 
 }
