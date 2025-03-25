@@ -1,52 +1,62 @@
-# cli_ip_range_creator - ip address range generator.
-
-### what is he doing????
-
-- the program reads a file with a range of ip addresses.
-- inside the file are lines like this:
-
-~~~
-31.22.48.0-31.22.50.15	
-31.22.50.16-31.22.51.1
-31.22.51.2-31.22.52.39
-31.22.52.40-31.22.52.255
-31.22.53.0-31.22.53.254
-31.22.53.255-31.22.55.3
-~~~
-- the program reads the input file line by line and increments each line iteratively and writes all received lines to a single file.
 
 
-### Example:
-- we have the string : 94.28.1.0-94.28.2.255 
-- the result of running the program on this line
+```markdown
+# IP Range Generator
 
-~~~
-			94.28.1.0
-			94.28.1.1
-			94.28.1.2
-			..............
-			..............
-			94.28.1.255
-			94.28.2.0
-			94.28.2.1
-			94.28.2.3
-			..............
-			..............
-			94.28.2.255
-~~~
+## Описание
+Консольная утилита для генерации IP-адресов из диапазонов. Обрабатывает входной файл параллельно с использованием горутин.
 
-- and so on for each line in the file.
+## Установка
+```bash
+go build -o ipgen main.go
+```
 
-### how to use it ?
-- compile or run the program as a script and pass the following arguments:
-	 -  -ptf  (path to file) 
-	 -  -ptsf (path to  save file)
+## Использование
+```bash
+./ipgen -i input.txt -o output.txt -w 4
+```
 
-#### Example
-`go run main.go -ptf [path_to_file]  -ptsf [path_where_save_file]` 
+### Параметры
+| Флаг | Описание                  | По умолчанию     |
+|------|--------------------------|-----------------|
+| `-i` | Входной файл (обязательно)| -               |
+| `-o` | Выходной файл            | `new_output.txt`|
+| `-w` | Количество потоков       | `4`             |
 
-- -ptsf   - optional argument, if you do not specify it then the finished file will be saved next to the file main.go
+## Формат входных данных
+Каждая строка во входном файле должна содержать диапазон IP в формате:
+```
+XXX.XXX.XXX.XXX-XXX.XXX.XXX.XXX
+```
 
-## License
+Пример:
+```
+192.168.1.1-192.168.2.255
+10.0.0.0-10.0.1.255
+```
 
-MIT
+## Пример работы
+Входной файл (`input.txt`):
+```
+192.168.1.0-192.168.1.2
+```
+
+Запуск:
+```bash
+./ipgen -i input.txt -o ips.txt
+```
+
+Выходной файл (`ips.txt`):
+```
+192.168.1.0
+192.168.1.1
+192.168.1.2
+```
+
+## Требования
+- Go 1.16+
+- Linux/macOS/Windows
+
+## Лицензия
+MIT License
+```
