@@ -4,169 +4,128 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"log"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
 
-var threads int = runtime.NumCPU()
-var queue = make(chan string, threads)
-var stringOutGorotine = make(chan string, threads)
-
-var wg sync.WaitGroup
-
-func createFinalFile(fname string) {
-
-	f, err := os.OpenFile(fname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
-
-	defer f.Close()
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for {
-		s, ok := <-stringOutGorotine
-		f.WriteString(s + "\n")
-		if !ok {
-			break
-		}
-	}
-
-}
-
-func customStringBuilder(stringOutChan string) {
-
-	var cstr strings.Builder
-	var idxSymbols = make([]int, 7)
-	var count int
-
-	for idx, vle := range stringOutChan {
-
-		if vle == 46 || vle == 45 {
-
-			p := &idxSymbols[count]
-			*p = idx
-			count++
-		}
-
-	}
-
-	third := stringOutChan[idxSymbols[1]+1 : idxSymbols[2]]
-
-	t, _ := strconv.Atoi(third)
-
-	if stringOutChan[:idxSymbols[3]] == stringOutChan[idxSymbols[3]+1:] || stringOutChan[idxSymbols[1]+1:idxSymbols[2]] > stringOutChan[idxSymbols[5]+1:idxSymbols[6]] {
-		wg.Done()
-
-		return
-	}
-
-	for {
-
-		for i := 0; i < 256; i++ {
-
-			cstr.Reset()
-
-			s := strconv.Itoa(i)
-			nstr := strconv.Itoa(t)
-
-			cstr.WriteString(stringOutChan[:idxSymbols[1]] + "." + nstr + "." + s)
-
-			stringOutGorotine <- cstr.String()
-		}
-
-		t++
-
-		if strings.Compare(cstr.String(), stringOutChan[idxSymbols[3]+1:idxSymbols[6]]+".255") == 0 {
-
-			break
-		}
-
-	}
-	wg.Done()
-}
-
-func readFile(fname string) {
-
-	f, err := os.Open(fname)
-
-	defer f.Close()
-
-	if err != nil {
-
-		fmt.Println(err)
-	}
-
-	rf := bufio.NewScanner(f)
-
-	for rf.Scan() {
-
-		queue <- strings.TrimRight(rf.Text(), "\n")
-
-	}
-
-	close(queue)
-}
-
 func main() {
-
 	start := time.Now()
 
-	path, err := os.Getwd()
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	var argOne string
-	flag.StringVar(&argOne, "ptf", "", "path to file ")
-
-	if argOne != "" {
-		fmt.Println("the first argument is missing : path to file ")
-		os.Exit(3)
-	}
-
-	var argTwo string
-	flag.StringVar(&argTwo, "ptsf", "", "path to  save file ")
-
+	// Обработка параметров командной строки
+	var inputFile, outputFile string
+	var workers int
+	flag.StringVar(&inputFile, "i", "", "Input file path (required)")
+	flag.StringVar(&outputFile, "o", "new_output.txt", "Output file path")
+	flag.IntVar(&workers, "w", 4, "Number of workers")
 	flag.Parse()
 
-	if argTwo == "" {
-		argTwo = path + "/new_" + argOne
+	if inputFile == "" {
+		fmt.Println("Input file is required")
+		flag.Usage()
+		os.Exit(1)
 	}
 
-	fmt.Println("Start work")
+	// Проверка существования входного файла
+	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
+		fmt.Printf("Input file %s does not exist\n", inputFile)
+		os.Exit(1)
+	}
 
-	go readFile(argOne)
+	// Открытие файлов с обработкой ошибок
+	inFile, err := os.Open(inputFile)
+	if err != nil {
+		fmt.Printf("Error opening input file: %v\n", err)
+		os.Exit(1)
+	}
+	defer inFile.Close()
 
-	go createFinalFile(argTwo)
+	outFile, err := os.Create(outputFile)
+	if err != nil {
+		fmt.Printf("Error creating output file: %v\n", err)
+		os.Exit(1)
+	}
+	defer outFile.Close()
 
-	for {
+	// Каналы для параллельной обработки
+	lines := make(chan string, workers*2)
+	results := make(chan string, workers*2)
+	var wg sync.WaitGroup
 
-		s, ok := <-queue
-
-		if !ok {
-			break
-		}
-
+	// Пул worker'ов
+	for i := 0; i < workers; i++ {
 		wg.Add(1)
-		go customStringBuilder(s)
-
+		go func() {
+			defer wg.Done()
+			for line := range lines {
+				if processed, ok := processLine(line); ok {
+					results <- processed
+				}
+			}
+		}()
 	}
 
+	// Горутина для записи результатов
+	go func() {
+		writer := bufio.NewWriter(outFile)
+		defer writer.Flush()
+		for res := range results {
+			writer.WriteString(res + "\n")
+		}
+	}()
+
+	// Чтение входного файла
+	scanner := bufio.NewScanner(inFile)
+	for scanner.Scan() {
+		lines <- strings.TrimSpace(scanner.Text())
+	}
+	close(lines)
+
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Error reading input file: %v\n", err)
+	}
+
+	// Ожидание завершения обработки
 	wg.Wait()
+	close(results)
 
-	duration := time.Since(start)
+	fmt.Printf("Processing completed in %v\n", time.Since(start))
+}
 
-	time.Sleep(duration)
+func processLine(line string) (string, bool) {
+	parts := strings.FieldsFunc(line, func(r rune) bool { 
+		return r == '.' || r == '-' 
+	})
 
-	close(stringOutGorotine)
+	// Проверка корректности входных данных
+	if len(parts) < 6 {
+		return "", false
+	}
 
-	fmt.Printf("Time to work : %v , file name : new_%s  \n", duration, argOne)
+	// Проверка на идентичность диапазонов
+	if strings.Join(parts[:3], ".") == strings.Join(parts[3:6], ".") {
+		return "", false
+	}
 
+	startIP, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return "", false
+	}
+
+	endIP, err := strconv.Atoi(parts[4])
+	if err != nil {
+		return "", false
+	}
+
+	// Генерация результатов
+	var result strings.Builder
+	for i := startIP; i <= endIP; i++ {
+		for j := 0; j < 256; j++ {
+			result.WriteString(fmt.Sprintf("%s.%d.%d\n", parts[0], i, j))
+		}
+	}
+
+	return result.String(), true
 }
